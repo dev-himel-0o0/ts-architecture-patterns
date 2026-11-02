@@ -1,0 +1,40 @@
+name: CI Verification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    name: Lint, Typecheck & Test (Node 26 LTS)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 26 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check Prettier Formatting
+        run: npm run format:check
+
+      - name: Run Strict ESLint Check
+        run: npm run lint
+
+      - name: Run TypeScript Compiler Check
+        run: npm run typecheck
+
+      - name: Run Unit & Compile-Time Type Tests
+        run: npm test
+
+      - name: Verify Production Build Output
+        run: npm run build
